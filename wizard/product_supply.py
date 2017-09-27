@@ -40,22 +40,19 @@ class ProductSupply(models.TransientModel):
         for stock_move in stock_moves:
             band = False
             reserved_qty = stock_move.reserved_availability
-            stock_move.action_assign()
-            reserved_qty_after = stock_move.reserved_availability
-            _logger.info(reserved_qty_after)
-            #_logger.info(a)
             cont = 0
-            for l in list_prod:
+            for l in list_ids:
                 #prod, qty = l
-                if stock_move.product_id.id == l.id:
-                    list_qty[cont] = list_qty[cont] + reserved_qty_after - reserved_qty
+                if stock_move.product_id.id == l:
+                    list_qty[cont] = list_qty[cont] + reserved_qty
                     band = True
                     break
+                cont += 1
             if not band:
                 list_ids.append(stock_move.product_id.id)
                 list_prod.append(stock_move.product_id.name)
                 list_brand.append(stock_move.product_id.product_brand_id.name)
-                list_qty.append(reserved_qty_after - reserved_qty)
+                list_qty.append(reserved_qty)
 
         data = dict()
         extra_data = dict()
@@ -67,15 +64,24 @@ class ProductSupply(models.TransientModel):
         #data['list_prod'] = list_prod
         list_end = []
         cont = 0
+        cont_2 = 0
+        lista = []
+        count = 0
         for l in list_prod:
-            tup = (l, list_brand[cont], list_qty[cont])
-            list_end.append(tup)
+            if cont_2 == 0:
+                brand = list_brand[cont]
+                count = list_brand.count(brand)
+                lista = []
+            t = (l, list_qty[cont])
+            cont_2 += 1
+            lista.append(t)
+            if cont_2 == count:
+                tup = (brand, lista)
+                list_end.append(tup)
+                cont_2 = 0
+                count = 0
+            cont += 1
         extra_data['list_pro'] = list_end
-        _logger.info(extra_data['list_pro'])
-        _logger.info('lllllllllllpppppppppppppppppppps')
-        extra_data['list_pro'].sort(key=lambda tup: tup[1])
-        _logger.info(extra_data['list_pro'])
-        #extra_data['list_qty'] = list_qty
         data['extra_data'] = extra_data
         Report = self.env['report']
         return Report.get_action(
