@@ -29,7 +29,7 @@
                         <span t-esc="data['dest']" />
 
                     </div>
-
+<br/><br/>
                         <table class="table table-condensed">
                             <thead>
                                 <tr>
@@ -41,13 +41,13 @@
                             <tbody>
                                 <t t-foreach="data['list_pro']" t-as="so">
                                     <tr>
-                                        <td t-if="so[0]">
+                                        <td t-if="so[0]" width="300" align='left'>
                                             <span t-esc="so[0]"/>
                                         </td>
-                                        <td>
+                                        <td width="200" align='center'>
                                             <span t-esc="so[2]"/>
                                         </td>
-                                        <td>
+                                        <td width="200" align='right'>
                                             <span t-esc="so[1]"/>
                                         </td>
                                     </tr>
