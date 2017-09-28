@@ -22,7 +22,7 @@
             <field name="res_model">stock.move</field>
             <field name="view_mode">tree</field>
             <field name="domain">[('state', 'in', ['confirmed', 'assigned']),
-                ('date','&lt;=', datetime.datetime.combine(context_today()+datetime.timedelta(days=1), datetime.time(23,59,59))), ('date','&gt;=', datetime.datetime.combine(context_today()+datetime.timedelta(days=1), datetime.time(0,0,0))),
+                ('mrp_date','&lt;=', datetime.datetime.combine(context_today()+datetime.timedelta(days=1), datetime.time(23,59,59))), ('mrp_date','&gt;=', datetime.datetime.combine(context_today()+datetime.timedelta(days=1), datetime.time(0,0,0))),
                 ('raw_material_production_id','!=',False)]</field>
             <field name="view_id" ref="view_outgoing_material_tree"/>
         </record>
@@ -54,6 +54,8 @@
                     <field name="product_uom_qty"/>
                     <field name="reserved_availability"/>
                     <field name="origin"/>
+                    <field name="mrp_date"/>
+
                     <field name="state"/>
                 </tree>
             </field>

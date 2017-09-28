@@ -20,7 +20,7 @@
 #
 ###############################################################################
 
-from odoo import fields, models
+from odoo import api, fields, models
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -31,3 +31,33 @@ class StockMove(models.Model):
 
     product_brand = fields.Char(related='product_id.product_brand_id.name',
                               string='Brand', readonly=True, store=True)
+    #mrp_date_planned_start = fields.Datetime(related='production_id.date_planned_start',
+                              #string='Date Planned Start',
+                              #search='_search_date_planned', readonly=True)
+
+    mrp_date = fields.Datetime(
+        compute='_compute_mrp_date',
+        string='Date_planned',
+        search='_search_date_planned',
+        readonly=True,
+        store=False)
+
+    @api.one
+    def _compute_mrp_date(self):
+        MrpProduction = self.env['mrp.production']
+        moves = MrpProduction.search([
+                                    ('move_raw_ids.id', 'in', [self.id])])
+        if moves:
+            self.mrp_date = moves[0].date_planned_start
+
+    @api.multi
+    def _search_date_planned(self, operator, value):
+        MrpProduction = self.env['mrp.production']
+        #MrpProduction = self.env['mrp.production']
+        moves = MrpProduction.search([
+                                    ('date_planned_start', operator, value)])
+        list_ids = []
+        for move in moves:
+            for raw in move.move_raw_ids:
+                list_ids.append(raw.id)
+        return [('id', 'in', list_ids)]
