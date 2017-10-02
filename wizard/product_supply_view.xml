@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form string="Products supply">
                 <p class="oe_grey">
-                    You want to confirm the supply?
+                    you want to print?
                 </p>
                 <footer>
                     <button
