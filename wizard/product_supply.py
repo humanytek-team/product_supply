@@ -37,6 +37,7 @@ class ProductSupply(models.TransientModel):
         list_qty = []
         list_ids = []
         list_brand = []
+        list_code = []
         for stock_move in stock_moves:
             band = False
             reserved_qty = stock_move.reserved_availability
@@ -51,6 +52,7 @@ class ProductSupply(models.TransientModel):
             if not band:
                 list_ids.append(stock_move.product_id.id)
                 list_prod.append(stock_move.product_id.name)
+                list_code.append(stock_move.product_id.default_code)
                 list_brand.append(stock_move.product_id.product_brand_id.name)
                 list_qty.append(reserved_qty)
 

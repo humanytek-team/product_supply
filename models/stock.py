@@ -31,16 +31,20 @@ class StockMove(models.Model):
 
     product_brand = fields.Char(related='product_id.product_brand_id.name',
                               string='Brand', readonly=True, store=True)
-    #mrp_date_planned_start = fields.Datetime(related='production_id.date_planned_start',
-                              #string='Date Planned Start',
-                              #search='_search_date_planned', readonly=True)
-
+    product_default_code = fields.Char(related='product_id.default_code',
+                                     string='Default code',
+                                     readonly=True, store=True)
     mrp_date = fields.Datetime(
         compute='_compute_mrp_date',
         string='Date_planned',
         search='_search_date_planned',
         readonly=True,
         store=False)
+    lotes = fields.Char(compute='_compute_lote',
+                        string='Lotes',
+                        #search='_search_date_planned',
+                        readonly=True,
+                        store=False)
 
     @api.one
     def _compute_mrp_date(self):
@@ -61,3 +65,16 @@ class StockMove(models.Model):
             for raw in move.move_raw_ids:
                 list_ids.append(raw.id)
         return [('id', 'in', list_ids)]
+
+    @api.one
+    def _compute_lote(self):
+        _logger.info('llllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        _logger.info(self.lot_ids)
+        lotes = ""
+        for lote in self.lot_ids:
+            _logger.info('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq')
+            _logger.info(lote.name)
+            #if lote.lot_id:
+            lotes += lote.name + " "
+            _logger.info(lotes)
+        self.lotes = lotes

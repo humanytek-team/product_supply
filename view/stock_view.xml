@@ -7,11 +7,14 @@
             <!--<field name="priority" eval="100"/>-->
             <field name="arch" type="xml">
                 <tree>
+                    <field name="product_default_code"/>
                     <field name="product_id"/>
                     <field name="product_brand"/>
                     <field name="product_uom_qty"/>
+                    <field name="lotes" />
                     <field name="reserved_availability"/>
                     <field name="origin"/>
+                    <field name="product_default_code"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -49,9 +52,11 @@
             <!--<field name="priority" eval="100"/>-->
             <field name="arch" type="xml">
                 <tree>
+                    <field name="product_default_code"/>
                     <field name="product_id"/>
                     <field name="product_brand"/>
                     <field name="product_uom_qty"/>
+                    <field name="lotes" />
                     <field name="reserved_availability"/>
                     <field name="origin"/>
                     <field name="mrp_date"/>
@@ -62,7 +67,7 @@
         </record>
 
         <record model="ir.actions.act_window" id="action_outgoing2_material_tree">
-            <field name="name">Outgoing Material for Tomorrow</field>
+            <field name="name">Outgoing Material</field>
             <field name="res_model">stock.move</field>
             <field name="view_mode">tree</field>
             <field name="domain">[('state', 'in', ['confirmed', 'assigned']),
