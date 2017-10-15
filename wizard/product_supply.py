@@ -37,29 +37,50 @@ class ProductSupply(models.TransientModel):
         list_qty = []
         list_ids = []
         list_brand = []
-        list_code = []
+        list_new_ids = []
         for stock_move in stock_moves:
-            band = False
-            reserved_qty = stock_move.reserved_availability
-            cont = 0
-            for l in list_ids:
-                #prod, qty = l
-                if stock_move.product_id.id == l:
-                    list_qty[cont] = list_qty[cont] + reserved_qty
-                    band = True
-                    break
-                cont += 1
-            if not band:
-                list_ids.append(stock_move.product_id.id)
-                list_prod.append(stock_move.product_id.name)
-                list_code.append(stock_move.product_id.default_code)
-                list_brand.append(stock_move.product_id.product_brand_id.name)
-                list_qty.append(reserved_qty)
 
+            reserved_qty = stock_move.reserved_availability
+            reserved_qty_lote = 0
+
+            for lote in stock_move.reserved_quant_ids:
+                band = False
+                qty = lote.qty
+                lote_name = lote.lot_id.name
+                lote_id = lote.lot_id.id
+                reserved_qty_lote += qty
+                cont = 0
+                for l, lot in list_ids:
+                    if stock_move.product_id.id == l and lot == lote_id:
+                        list_qty[cont] = list_qty[cont] + qty
+                        band = True
+                        break
+                    cont += 1
+                if not band:
+                    list_ids.append((stock_move.product_id.id, lote_id))
+                    list_prod.append((stock_move.product_id.name, stock_move.product_id.default_code, lote_name))
+                    list_brand.append(stock_move.product_id.product_brand_id.name)
+                    list_qty.append(qty)
+            if reserved_qty_lote < reserved_qty:
+                qty = reserved_qty - reserved_qty_lote
+                cont = 0
+                for l, lot in list_ids:
+                    if stock_move.product_id.id == l and lot == -1:
+                        list_qty[cont] = list_qty[cont] + qty
+                        band = True
+                        break
+                    cont += 1
+                if not band:
+                    list_ids.append((stock_move.product_id.id, -1))
+                    list_prod.append((stock_move.product_id.name, stock_move.product_id.default_code, ''))
+                    list_brand.append(stock_move.product_id.product_brand_id.name)
+                    list_qty.append(qty)
         data = dict()
         extra_data = dict()
         #data['ids'] = []
-        data['ids'] = list_ids
+        for l, q in list_ids:
+            list_new_ids.append(l)
+        data['ids'] = list_new_ids
         extra_data['date'] = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
         extra_data['origin'] = stock_moves[0].location_id.name
         extra_data['dest'] = stock_moves[0].location_dest_id.name
@@ -69,12 +90,12 @@ class ProductSupply(models.TransientModel):
         cont_2 = 0
         lista = []
         count = 0
-        for l in list_prod:
+        for l, default_code, lote_name in list_prod:
             if cont_2 == 0:
                 brand = list_brand[cont]
                 count = list_brand.count(brand)
                 lista = []
-            t = (l, list_qty[cont])
+            t = (l, list_qty[cont], default_code, lote_name)
             cont_2 += 1
             lista.append(t)
             if cont_2 == count:

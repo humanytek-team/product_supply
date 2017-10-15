@@ -21,7 +21,6 @@
 ###############################################################################
 
 from datetime import datetime
-from pytz import timezone
 from odoo import api, models
 import logging
 _logger = logging.getLogger(__name__)
@@ -32,7 +31,6 @@ class ProductSupply(models.AbstractModel):
 
     @api.model
     def render_html(self, docids, data=None):
-        _logger.info('DCCCCCCCCCCCDDDDDDDDDDDDDCCCCCCCCCCCCCCCCCDDDDDDDDDDDD')
         docids = data['ids']
         Report = self.env['report']
         StockMove = self.env['stock.move']

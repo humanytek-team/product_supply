@@ -42,7 +42,6 @@ class StockMove(models.Model):
         store=False)
     lotes = fields.Char(compute='_compute_lote',
                         string='Lotes',
-                        #search='_search_date_planned',
                         readonly=True,
                         store=False)
 
@@ -57,7 +56,6 @@ class StockMove(models.Model):
     @api.multi
     def _search_date_planned(self, operator, value):
         MrpProduction = self.env['mrp.production']
-        #MrpProduction = self.env['mrp.production']
         moves = MrpProduction.search([
                                     ('date_planned_start', operator, value)])
         list_ids = []
@@ -68,13 +66,8 @@ class StockMove(models.Model):
 
     @api.one
     def _compute_lote(self):
-        _logger.info('llllllllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-        _logger.info(self.lot_ids)
         lotes = ""
-        for lote in self.lot_ids:
-            _logger.info('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq')
-            _logger.info(lote.name)
-            #if lote.lot_id:
-            lotes += lote.name + " "
-            _logger.info(lotes)
+        for quant in self.reserved_quant_ids:
+            if quant.lot_id:
+                lotes += quant.lot_id.name + " " + str(quant.qty) + ", "
         self.lotes = lotes
