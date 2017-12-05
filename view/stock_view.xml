@@ -15,6 +15,7 @@
                     <field name="reserved_availability"/>
                     <field name="origin"/>
                     <field name="product_default_code"/>
+                    <field name="sale_order_type_id"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -60,7 +61,7 @@
                     <field name="reserved_availability"/>
                     <field name="origin"/>
                     <field name="mrp_date"/>
-
+                    <field name="sale_order_type_id"/>
                     <field name="state"/>
                 </tree>
             </field>

@@ -34,6 +34,7 @@ class StockMove(models.Model):
     product_default_code = fields.Char(related='product_id.default_code',
                                      string='Default code',
                                      readonly=True, store=True)
+
     mrp_date = fields.Datetime(
         compute='_compute_mrp_date',
         string='Date_planned',
@@ -44,6 +45,10 @@ class StockMove(models.Model):
                         string='Lotes',
                         readonly=True,
                         store=False)
+    sale_order_type_id = fields.Many2one(compute='_compute_type',
+                        string='Sale Order Type',
+                        readonly=True,
+                        store=True)
 
     @api.one
     def _compute_mrp_date(self):
@@ -71,3 +76,13 @@ class StockMove(models.Model):
             if quant.lot_id:
                 lotes += quant.lot_id.name + " " + str(quant.qty) + ", "
         self.lotes = lotes
+
+
+    @api.one
+    def _compute_type(self):
+        MrpProduction = self.env['mrp.production']
+        moves = MrpProduction.search([
+                                    ('move_raw_ids.id', 'in', [self.id])])
+        if moves:
+            if moves[0].sale_id:
+                self.sale_order_type_id = moves[0].sale_id.type_id.id
