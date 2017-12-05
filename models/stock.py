@@ -77,12 +77,11 @@ class StockMove(models.Model):
                 lotes += quant.lot_id.name + " " + str(quant.qty) + ", "
         self.lotes = lotes
 
-
     @api.one
     def _compute_type(self):
         MrpProduction = self.env['mrp.production']
-        moves = MrpProduction.search([
+        productions = MrpProduction.search([
                                     ('move_raw_ids.id', 'in', [self.id])])
-        if moves:
-            if moves[0].sale_id:
-                self.sale_order_type_id = moves[0].sale_id.type_id.id
+        if productions:
+            if productions[0].sale_id:
+                self.sale_order_type_id = productions[0].sale_id.type_id.id
