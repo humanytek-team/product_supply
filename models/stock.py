@@ -45,10 +45,10 @@ class StockMove(models.Model):
                         string='Lotes',
                         readonly=True,
                         store=False)
-    sale_order_type_id = fields.Many2one(compute='_compute_type',
+    sale_order_type_id = fields.Char(compute='_compute_type',
                         string='Sale Order Type',
                         readonly=True,
-                        store=True)
+                        store=False)
 
     @api.one
     def _compute_mrp_date(self):
@@ -84,4 +84,4 @@ class StockMove(models.Model):
                                     ('move_raw_ids.id', 'in', [self.id])])
         if productions:
             if productions[0].sale_id:
-                self.sale_order_type_id = productions[0].sale_id.type_id.id
+                self.sale_order_type_id = productions[0].sale_id.type_id.name
