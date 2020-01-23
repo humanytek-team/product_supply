@@ -20,4 +20,4 @@
 #
 ###############################################################################
 
-import product_supply_report
+from . import product_supply_report
