@@ -21,33 +21,26 @@
 ###############################################################################
 
 from datetime import datetime
+from collections import OrderedDict
 from odoo import api, models
 import logging
 _logger = logging.getLogger(__name__)
 
 
 class ProductSupply(models.AbstractModel):
-    _name = 'report.product_supply.report_supply'
+    _name = 'report.product_supply.report_product_supply'
 
     @api.model
-    def render_html(self, docids, data=None):
-        docids = data['ids']
-        Report = self.env['report']
-        StockMove = self.env['stock.move']
-        report = Report._get_report_from_name(
-            'product_supply.report_supply')
-        docs = StockMove.browse(docids)
-        #tz = self.env.context.get('tz', False)
-        #if not tz:
-            #tz = 'US/Arizona'
-        datetime_now = datetime.now()
-        data['extra_data'].update({
-            'datetime': datetime_now.strftime('%d/%m/%y %H:%M:%S'), })
-        docargs = {
+    def _get_report_values(self, docids, data=None):
+        docids = data['extra_data']['ids']
+        model_stock_move = self.env['stock.move']
+        docs = model_stock_move.browse(docids)
+        data['extra_data']['moves'] = {b: OrderedDict(
+            sorted(v.items(), key=lambda x: x[0])) for b, v in data[
+                'extra_data']['moves'].items()}
+        return {
             'doc_ids': docids,
-            'doc_model': report.model,
             'docs': docs,
             'data': data['extra_data'],
+            'env': self.env
         }
-
-        return Report.render('product_supply.report_supply', docargs)
